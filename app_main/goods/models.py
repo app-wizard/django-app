@@ -29,7 +29,7 @@ class Products(models.Model):
         db_table = "product"
 
     def __str__(self):
-        return f"{self.name} Кол-во {self.quantity}"
+        return f"{self.name}"
 
     def display_id(self):
         return f"{self.id:05}"
