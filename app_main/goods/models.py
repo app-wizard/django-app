@@ -27,6 +27,9 @@ class Products(models.Model):
 
     class Meta:
         db_table = "product"
+        verbose_name = "product"
+        verbose_name_plural = "products"
+        ordering: list[str] = ["id"]
 
     def __str__(self):
         return f"{self.name}"

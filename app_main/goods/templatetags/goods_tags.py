@@ -1,5 +1,5 @@
-from goods.models import Categories
 from django import template
+from goods.models import Categories
 
 register = template.Library()
 
