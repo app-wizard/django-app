@@ -1,7 +1,6 @@
-{% extends "main/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% load goods_tags %}
-
 
 {% block content %}
                     <!-- Контент на странице -->
@@ -46,6 +45,14 @@
                             </form>
                         </div>
 
+                        {%if request.GET.q %}
+                            <h3 class="mt-4"> Результаты поиска по запросу {{ request.GET.q }}</h3>
+                            {% if not goods %}
+                            <link rel="stylesheet" href="{% static 'deps/css/my_footer_css.css' %}"> 
+                            <h3 class="mt-4"> По запросу ничего не найденно {{ request.GET.q }}</h3>
+                            {% endif %}
+                        {% endif %}
+
                         {% for product in goods %}
                             <!-- Карта товара -->
                             <div class="col-lg-4 col-md-6 p-4">
@@ -83,6 +90,7 @@
 
                     </div>
                     <!-- Пагинация -->
+                    {%if goods.has_other_pages %}
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center my-4">
                             <div class="custom-shadow d-flex">
@@ -119,6 +127,8 @@
                             </div>
                         </ul>
                     </nav>
+                    {% endif %}
+
 {% endblock content %}
 
 {% block footer %}
@@ -128,3 +138,5 @@
     </div>
 </footer>
 {% endblock %}
+
+
