@@ -1,44 +1,101 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-                    <!-- Контент на странице -->
-                    <div class="container mt-5">
-                        <div class="card mb-4 custom-shadow">
-                            <div class="row">
-                                <!-- Миниатюры -->
-                                <div class="col-md-4">
-                                    <img src="{{ product.image.url }}" 
-                                        class="img-thumbnail" data-bs-toggle="modal" data-bs-target="#imageModal1">
-                                </div>
-                                <div class="col-md-7 ">
-                                    <h3 class="card-title mt-3">{{product.name}}</h3>
-                                    <p class="card-text"> <strong> Price: {{product.sell_price}} $</strong></p>
-                                    <p class="card-text">{{product.description}}</p>
-                                </div>
-                                <!-- Увеличить изображение в модальном окне -->
-                                <div class="modal fade" id="imageModal1" tabindex="-1"
-                                    aria-labelledby="imageModal1Label" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="imageModal1Label">{{product.name}}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <img src="{{ product.image.url }}"
-                                                    class="img-fluid" alt="{{product.name}}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Описание товара -->
-                            <div class="card-body">
+<div class="container mt-5">
+  <div class="card mb-4 custom-shadow">
+    <div class="row card-body">
+      <div class="col-md-4">
+        <img src="{{ product.image.url }}" class="img-thumbnail" data-bs-toggle="modal" data-bs-target="#imageModal1">
+      </div>
+      <div class="col-md-7">
+        <h3 class="card-title mt-3">{{ product.name }}</h3>
+        <p class="card-text"><strong>Price: {{ product.sell_price }} $</strong></p>
+        <p class="card-text">{{ product.description }}</p>
+      </div>
+      <!-- Image enlargement in a modal window -->
+      <div class="modal fade" id="imageModal1" tabindex="-1" aria-labelledby="imageModal1Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="imageModal1Label">{{ product.name }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Product description -->
+    <div class="row card-body">
+      <div class="row d-flex justify-content-center align-items-start">
+        <div class="col min-width-250 card m-3">
+          <h5>Comments ({{ comment_count }}):</h5>
+          <div class="card-body">
+            {% for comment in comments %}
+            <div class="p-2 comments{% if not comment.approved and comment.author == user %} faded{% elif not comment.approved %} d-none{% endif %}">
+              <p class="font-weight-bold">
+                {{ comment.author }}
+                <span class="font-weight-normal">{{ comment.created_on }}</span> wrote:
+              </p>
+              <div id="comment{{ comment.id }}">
+                {{ comment.body | linebreaks }}
+              </div>
+              {% if not comment.approved and comment.author == user %}
+              <p class="approval">This comment is awaiting approval</p>
+              {% endif %}
+              {% if user.is_authenticated and comment.author == user %}
+              <button class="btn btn-custom-delete btn-delete" comment_id="{{ comment.id }}">Delete</button>
+              <button class="btn btn-custom-edit btn-edit" comment_id="{{ comment.id }}">Edit</button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Creating New Comments -->
+        <div class="col min-width-250 card m-3">
+          <div class="card-body">
+            {% if user.is_authenticated %}
+            <h3>Leave a comment:</h3>
+            <p>Posting as: {{ user.username }}</p>
+            <form id="commentForm" method="post" style="margin-top: 1.3em;">
+              {% csrf_token %}
+              {{ comment_form | crispy }}
+              <button id="submitButton" type="submit" class="btn btn-secondary btn-dark">Submit</button>
+            </form>
+            {% else %}
+            <p>Log in to leave a comment</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-                                <a href="#" class="btn btn-dark">Leave a feedback</a>
-                            </div>
-                        </div>
-                    </div>
+<!-- Delete confirmation modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete comment?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete your comment? This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a id="deleteConfirm" href="#" class="btn btn-danger">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
+
+{% block extras %}
+<script src="{% static 'deps/js/comments.js' %}"></script>
+{% endblock %}

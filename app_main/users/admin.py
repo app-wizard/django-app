@@ -1,6 +1,9 @@
 from django.contrib import admin
+from goods.models import Comment
 
 from users.models import User
+
+admin.site.register(Comment)
 
 # Register your models here.
 @admin.register(User)

@@ -36,3 +36,29 @@ body {
   border-radius: 15px;
   font-size: 0.7rem;
 }
+
+.min-width-250 {
+  min-width: 250px; 
+}
+
+.btn-custom-delete {
+  background-color: #25282b; 
+  color: #ffffff; 
+  border: none;
+}
+
+.btn-custom-delete:hover {
+  background-color: #c61414; 
+  color: #ffffff; 
+}
+
+.btn-custom-edit {
+  background-color: #25282b; 
+  color: #ffffff; 
+  border: none;
+}
+
+.btn-custom-edit:hover {
+  background-color: #3d0fd6; 
+  color: #ddd; 
+}
